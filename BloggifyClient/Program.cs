@@ -131,11 +131,12 @@ namespace BloggifyClient
             Console.WriteLine("3) Delete page");
             Console.WriteLine("4) Delete article");
             Console.WriteLine("5) New article");
-            Console.WriteLine("6) Quit");
+            Console.WriteLine("6) New page");
+            Console.WriteLine("7) Quit");
             Console.Write("> ");
             try {
                 int selected = int.Parse(Console.ReadLine());
-                if (selected > 6 || selected < 1) {
+                if (selected > 7 || selected < 1) {
                     return Menu();
                 }
 
@@ -193,9 +194,34 @@ namespace BloggifyClient
                     break;
                 // New article
                 case 5:
+                    Console.WriteLine(">>> New article.");
+                    string articleTitle = "";
+                    string tags = "";
+                    string articleContent = "";
+
+                    readField(ref articleTitle, "Title");
+                    readField(ref tags, "Tags");
+                    readField(ref articleContent, "Content");
+
+                    Console.WriteLine(makeApiRequest("save/article", "{ \"title\": \"" + articleTitle + "\", \"tags\": \"" + tags  + "\", \"content\": \"" + articleContent + "\" }"));
+                    break;
+                // New page
+                case 6:
+                    Console.WriteLine(">>> New page.");
+                    string pageTitle = "";
+                    string pageContent = "";
+                    string pageOrder = "";
+
+                    readField(ref pageTitle, "Title");
+                    readField(ref pageContent, "Content");
+                    readField(ref pageOrder, "Order");
+
+
+                    Console.WriteLine(makeApiRequest("save/page", "{ \"title\": \"" + pageTitle + "\", \"content\": \"" + pageContent + "\", \"order\": " +  pageOrder+ " }"));
                     break;
                 // Quit
-                case 6:
+                case 7:
+                    Console.WriteLine("Have a nice day.");
                     Environment.Exit(0);
                     break;
             }
