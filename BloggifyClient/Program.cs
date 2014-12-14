@@ -30,7 +30,7 @@ namespace BloggifyClient
 
         static string makeApiRequest(string api, string postData) {
             var request = (HttpWebRequest)WebRequest.Create(host + "/api/" + api);
-            var data = Encoding.ASCII.GetBytes("");
+            var data = Encoding.ASCII.GetBytes(postData);
 
 
             request.Method = postData.Length > 0 ? "POST" : "GET";
@@ -48,8 +48,24 @@ namespace BloggifyClient
             }
 
 
-            var response = (HttpWebResponse)request.GetResponse();
-            return new StreamReader(response.GetResponseStream()).ReadToEnd();
+            try {
+                using (WebResponse response = request.GetResponse())
+                {
+                    return new StreamReader(response.GetResponseStream()).ReadToEnd();
+                }
+            } catch (WebException e) {
+                using (WebResponse response = e.Response)
+                {
+                    HttpWebResponse httpResponse = (HttpWebResponse) response;
+                    Console.WriteLine("Error code: {0}", httpResponse.StatusCode);
+                    using (Stream d = response.GetResponseStream())
+                    using (var reader = new StreamReader(d))
+                    {
+                        string text = reader.ReadToEnd();
+                        return text;
+                    }
+                }
+            }
         }
 
         static string getSid()
@@ -163,11 +179,18 @@ namespace BloggifyClient
                     break;
                 // Delete page
                 case 3:
+                    Console.WriteLine(">>> Delete page.");
+                    string pageSlug = "";
+                    readField(ref pageSlug, "Page Slug");
+                    Console.WriteLine(makeApiRequest("delete/page", "{ \"slug\": \"" + pageSlug + "\"}"));
                     break;
                 // Delete article
                 case 4:
+                    Console.WriteLine(">>> Delete article.");
+                    string articleId = "";
+                    readField(ref articleId, "Article Id");
+                    Console.WriteLine(makeApiRequest("delete/article", "{ \"id\": \"" + articleId + "\"}"));
                     break;
-                
                 // New article
                 case 5:
                     break;
