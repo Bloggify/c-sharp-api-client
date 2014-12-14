@@ -132,11 +132,12 @@ namespace BloggifyClient
             Console.WriteLine("4) Delete article");
             Console.WriteLine("5) New article");
             Console.WriteLine("6) New page");
-            Console.WriteLine("7) Quit");
+            Console.WriteLine("7) Sync data with git remote server");
+            Console.WriteLine("8) Quit");
             Console.Write("> ");
             try {
                 int selected = int.Parse(Console.ReadLine());
-                if (selected > 7 || selected < 1) {
+                if (selected > 8 || selected < 1) {
                     return Menu();
                 }
 
@@ -219,8 +220,13 @@ namespace BloggifyClient
 
                     Console.WriteLine(makeApiRequest("save/page", "{ \"title\": \"" + pageTitle + "\", \"content\": \"" + pageContent + "\", \"order\": " +  pageOrder+ " }"));
                     break;
-                // Quit
+                // Sync
                 case 7:
+                    Console.WriteLine(">>> Syncing " + host + " with git remote server.");
+                    Console.WriteLine(makeApiRequest("sync", ""));
+                    break;
+                // Quit
+                case 8:
                     Console.WriteLine("Have a nice day.");
                     Environment.Exit(0);
                     break;
