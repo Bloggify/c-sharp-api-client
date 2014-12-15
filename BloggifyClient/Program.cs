@@ -13,19 +13,51 @@ namespace BloggifyClient
         static string username = "";
         static string password = "";
         static string authToken = "";
-        static void readField(ref string field, string label) {
+        static void readField(ref string field, string label, bool showValue) {
             Console.Write("> " + label + ": ");
-            field = Console.ReadLine();
+
+            if (showValue == true)
+            {
+                field = Console.ReadLine();
+            }
+            else
+            {
+                string pass = "";
+                ConsoleKeyInfo key;
+                do
+                {
+                    key = Console.ReadKey(true);
+                    // Backspace Should Not Work
+                    if (key.Key != ConsoleKey.Backspace)
+                    {
+                        pass += key.KeyChar;
+                        Console.Write("*");
+                    }
+                    else
+                    {
+                        if (pass.Length > 0) {
+                            pass = pass.Remove(pass.Length - 1);
+                            Console.Write("\b \b");
+                        }
+                    }
+                }
+                // Stops Receving Keys Once Enter is Pressed
+                while (key.Key != ConsoleKey.Enter);
+
+                Console.WriteLine();
+                field = pass.Trim();
+            }
+
             while (field.Length == 0) {
-                readField(ref field, label);
+                readField(ref field, label, showValue);
             }
         }
 
         static void promptForLoginData(ref string username, ref string password, ref string host)
         {
-            readField(ref username, "Username");
-            readField(ref password, "Password");
-            readField(ref host, "Host");
+            readField(ref username, "Username", true);
+            readField(ref password, "Password", false);
+            readField(ref host, "Host", true);
         }
 
         static string makeApiRequest(string api, string postData) {
@@ -120,6 +152,7 @@ namespace BloggifyClient
             try {
                 return getSid();
             } catch (Exception ex) {
+                File.Delete("conf");
                 Console.WriteLine("Something went wrong: " + ex.Message);
                 return getAuthToken();
             }
@@ -183,14 +216,14 @@ namespace BloggifyClient
                 case 3:
                     Console.WriteLine(">>> Delete page.");
                     string pageSlug = "";
-                    readField(ref pageSlug, "Page Slug");
+                    readField(ref pageSlug, "Page Slug", true);
                     Console.WriteLine(makeApiRequest("delete/page", "{ \"slug\": \"" + pageSlug + "\"}"));
                     break;
                 // Delete article
                 case 4:
                     Console.WriteLine(">>> Delete article.");
                     string articleId = "";
-                    readField(ref articleId, "Article Id");
+                    readField(ref articleId, "Article Id", true);
                     Console.WriteLine(makeApiRequest("delete/article", "{ \"id\": \"" + articleId + "\"}"));
                     break;
                 // New article
@@ -200,9 +233,9 @@ namespace BloggifyClient
                     string tags = "";
                     string articleContent = "";
 
-                    readField(ref articleTitle, "Title");
-                    readField(ref tags, "Tags");
-                    readField(ref articleContent, "Content");
+                    readField(ref articleTitle, "Title", true);
+                    readField(ref tags, "Tags", true);
+                    readField(ref articleContent, "Content", true);
 
                     Console.WriteLine(makeApiRequest("save/article", "{ \"title\": \"" + articleTitle + "\", \"tags\": \"" + tags  + "\", \"content\": \"" + articleContent + "\" }"));
                     break;
@@ -213,9 +246,9 @@ namespace BloggifyClient
                     string pageContent = "";
                     string pageOrder = "";
 
-                    readField(ref pageTitle, "Title");
-                    readField(ref pageContent, "Content");
-                    readField(ref pageOrder, "Order");
+                    readField(ref pageTitle, "Title", true);
+                    readField(ref pageContent, "Content", true);
+                    readField(ref pageOrder, "Order", true);
 
 
                     Console.WriteLine(makeApiRequest("save/page", "{ \"title\": \"" + pageTitle + "\", \"content\": \"" + pageContent + "\", \"order\": " +  pageOrder+ " }"));

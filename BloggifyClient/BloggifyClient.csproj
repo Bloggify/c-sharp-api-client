@@ -39,6 +39,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <None Include="bin\Debug\conf" />
+    <Folder Include="bin\Debug\" />
   </ItemGroup>
 </Project>
